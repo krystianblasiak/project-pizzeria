@@ -97,6 +97,8 @@ const select = {
       console.log("CartButton: ", thisProduct.cartButton);
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
       console.log("PriceElem: ", thisProduct.priceElem);
+      thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
+      console.log("ImageWrapper: ", thisProduct.imageWrapper);
     }
 
     initAccordion(){
@@ -166,21 +168,37 @@ const select = {
           // determine option value
           const option = param.options[optionId];
           console.log(optionId, option);
+          
+          const image = thisProduct.imageWrapper.querySelector('.' + paramId + "-" + optionId);
 
           // check if there is param with a name of paramId in formData and if it includes optionId
           if(formData[paramId] && formData[paramId].includes(optionId)) {
+            
+            if(image){
+              image.classList.add(classNames.menuProduct.imageVisible);
+              console.log("image: ", image);
+            }
+
             // check if the option is not default
             if(!option.default) {
               // add option price to price variable
               price += option.price;
+              
             }
           } else {
+
+            if(image){
+              image.classList.remove(classNames.menuProduct.imageVisible);
+            }
+            
             // check if the option is default
             if(option.default) {
               // reduce price variable
               price -= option.price;
             }
           }
+
+          
         }
       }
       console.log("price: ", price);
