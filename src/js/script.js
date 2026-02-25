@@ -390,6 +390,7 @@ const select = {
       thisCart.dom = {};
       thisCart.dom.wrapper = element;
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
+      thisCart.dom.productList = this.dom.wrapper.querySelector(select.cart.productList);
     }
 
     initActions(){
@@ -402,6 +403,15 @@ const select = {
 
     add(menuProduct){
       const thisCart = this;
+
+      /* generate HTML based on template */
+      const generatedHTML = templates.cartProduct(menuProduct);
+
+      /* create element using utils.createElementFromHTML */
+      const generatedDOM = utils.createDOMFromHTML(generatedHTML);
+
+      /* add element to cart wrapper */
+      thisCart.dom.productList.appendChild(generatedDOM);
 
       console.log("adding product: ", menuProduct);
     }
