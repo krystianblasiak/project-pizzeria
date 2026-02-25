@@ -214,7 +214,7 @@ const select = {
       //console.log("price: ", price);
       /* multiply price by amount */
       price *= thisProduct.amountWidget.value;
-      
+
       // update calculated price in the HTML
       thisProduct.priceElem.innerHTML = price;
     }
@@ -225,7 +225,14 @@ const select = {
       const thisWidget = this;
 
       thisWidget.getElements(element);
-      thisWidget.setValue(thisWidget.input.value);
+
+      if(isNaN(thisWidget.input.value)){
+        thisWidget.setValue(thisWidget.input.value);
+      }
+      else {
+        thisWidget.setValue(settings.amountWidget.defaultValue);
+      }
+      
       thisWidget.initActions();
       console.log("AmountWidget: ", thisWidget);
       console.log("constructor arguments: ", element);
@@ -246,7 +253,7 @@ const select = {
 
       /* TODO: Add validation */
 
-      if(newValue !== thisWidget.input.value && !isNaN(newValue) && newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax){
+      if(newValue !== thisWidget.value && !isNaN(newValue) && newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax){
         thisWidget.value = newValue;
         thisWidget.announce();
       }
