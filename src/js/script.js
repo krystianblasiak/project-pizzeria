@@ -180,6 +180,7 @@ const select = {
       thisProduct.dom.cartButton.addEventListener("click", function(event){
         event.preventDefault();
         thisProduct.processOrder();
+        thisProduct.addToCart();
       });
 
       //console.log("initOrderForm");
@@ -239,12 +240,69 @@ const select = {
           
         }
       }
+
+      thisProduct.priceSingle = price;
+
       //console.log("price: ", price);
       /* multiply price by amount */
       price *= thisProduct.amountWidget.value;
 
       // update calculated price in the HTML
       thisProduct.dom.priceElem.innerHTML = price;
+    }
+
+    addToCart(){
+      const thisProduct = this;
+
+      app.cart.add(thisProduct.prepareCartProduct());
+    }
+
+    prepareCartProduct(){
+      const thisProduct = this;
+      const productSummary = {};
+
+      productSummary.id = thisProduct.id;
+      productSummary.name = thisProduct.data.name;
+      productSummary.amount = thisProduct.amountWidget.value;
+      productSummary.priceSingle = thisProduct.priceSingle;
+      productSummary.price = thisProduct.amountWidget.value * thisProduct.priceSingle;
+      
+      productSummary.params = thisProduct.prepareCartProductParams();
+      
+      return productSummary;
+    }
+
+    prepareCartProductParams(){
+      const thisProduct = this;
+
+      const params = {};
+
+      // covert form to object structure
+      const formData = utils.serializeFormToObject(thisProduct.dom.form);
+
+      // for every category (param)...
+      for(let paramId in thisProduct.data.params){
+        // determine param value
+        const param = thisProduct.data.params[paramId];
+
+        params[paramId] = {
+          label: param.label,
+          options: {}
+        }
+        // for every option in this category
+        for(let optionId in param.options){
+          // determine option value
+          const option = param.options[optionId];
+          //console.log(optionId, option);
+          
+          // check if there is param with a name of paramId in formData and if it includes optionId
+          if(formData[paramId] && formData[paramId].includes(optionId)) {
+
+            params[paramId].options[optionId] = option.label;
+          }
+        }
+      }
+      return params;
     }
   }
 
@@ -340,6 +398,12 @@ const select = {
       thisCart.dom.toggleTrigger.addEventListener("click",  function(){
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
       });
+    }
+
+    add(menuProduct){
+      const thisCart = this;
+
+      console.log("adding product: ", menuProduct);
     }
   }
 
