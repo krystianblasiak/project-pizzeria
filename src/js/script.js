@@ -528,7 +528,17 @@ const select = {
         body: JSON.stringify(playload),
       }
 
-      fetch(url,options);
+      fetch(url,options).then(response => {
+        if(response.ok){
+          alert("Zamówienie wysłane");
+        }
+        else{
+          const error = "Nie można połączyć się z serwerem! Kod błędu: " + response.status;
+          alert(error);
+        }
+      }).catch(error => {
+        alert(error);
+      });
 
       for(const product of thisCart.products){
         product.dom.amountWidget.parentElement.remove();
@@ -639,7 +649,6 @@ const select = {
           return rawResponse.json();
         })
         .then(function(prasedResponse){
-          console.log("prasedResponse: ", prasedResponse);
 
           /* save prasedResponse as thisApp.data.products */
           thisApp.data.products = prasedResponse;
@@ -647,6 +656,8 @@ const select = {
           /* exectue initMenu method */
           thisApp.initMenu();
 
+        }).catch(erorr=>{
+          alert(erorr);
         });
       thisApp.data = {};
     },
