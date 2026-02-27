@@ -72,6 +72,11 @@ const select = {
     cart: {
       defaultDeliveryFee: 20,
     },
+    db: {
+      url: "//localhost:3131",
+      products: "products",
+      orders: "orders",
+    },
   };
 
   const templates = {
@@ -425,9 +430,7 @@ const select = {
       for(const product of thisCart.products){
         totalNumber = totalNumber + parseInt(product.amount);
         subtotalPrice += product.price;
-        console.log("amount: ", product.amount);
       }
-      console.log(thisCart.products);
 
       if(totalNumber > 0){
         thisCart.totalPrice = subtotalPrice + deliveryFee;
@@ -443,12 +446,6 @@ const select = {
       thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
       thisCart.dom.totalPriceOne.innerHTML = thisCart.totalPrice;
       thisCart.dom.totalNumber.innerHTML = totalNumber;
-
-      console.log("deliveryFee: ", deliveryFee);
-      console.log("products: ", thisCart.products);
-      console.log("totalPrice", thisCart.totalPrice);
-      console.log("subtotalPrice: ", subtotalPrice);
-      console.log("totalNumber: ", totalNumber);
     }
 
     remove(cartProduct){
@@ -458,7 +455,6 @@ const select = {
       cartProduct.dom.amountWidget.parentElement.remove();
       thisCart.products.splice(index, 1);
       thisCart.update();
-      console.log(thisCart.products)
     }
   }
 
@@ -532,14 +528,31 @@ const select = {
       const thisApp = this;
 
       for(let productData in thisApp.data.products){
-        new Product(productData, thisApp.data.products[productData]);
+        new Product(thisApp.data.products[productData].id, thisApp.data.products[productData]);
       }
     },
 
     initData: function() {
       const thisApp = this;
+      const url = settings.db.url + "/" + settings.db.products;
 
-      thisApp.data = dataSource;
+      
+
+      fetch(url)
+        .then(function(rawResponse){
+          return rawResponse.json();
+        })
+        .then(function(prasedResponse){
+          console.log("prasedResponse: ", prasedResponse);
+
+          /* save prasedResponse as thisApp.data.products */
+          thisApp.data.products = prasedResponse;
+
+          /* exectue initMenu method */
+          thisApp.initMenu();
+
+        });
+      thisApp.data = {};
     },
 
     initCart: function(){
@@ -553,7 +566,7 @@ const select = {
       const thisApp = this;
 
       thisApp.initData();
-      thisApp.initMenu();
+      
       thisApp.initCart();
     },
   };
