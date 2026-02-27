@@ -187,7 +187,6 @@ const select = {
 
       // covert form to object structure
       const formData = utils.serializeFormToObject(thisProduct.dom.form);
-      //console.log("formData", formData);
 
       // set price to default price
       let price = thisProduct.data.price;
@@ -236,7 +235,6 @@ const select = {
 
       thisProduct.priceSingle = price;
 
-      //console.log("price: ", price);
       /* multiply price by amount */
       price *= thisProduct.amountWidget.value;
 
@@ -248,6 +246,10 @@ const select = {
       const thisProduct = this;
 
       app.cart.add(thisProduct.prepareCartProduct());
+      
+      thisProduct.dom.form.reset();
+      thisProduct.initAmountWidget();
+      thisProduct.processOrder();
     }
 
     prepareCartProduct(){
@@ -411,7 +413,38 @@ const select = {
 
       thisCart.dom.form.addEventListener("submit", function(event){
         event.preventDefault();
-        thisCart.sendOrder();
+        if(thisCart.dom.phone.value.length == 9 && thisCart.dom.address.value.length > 2 && thisCart.totalNumber > 0 && !isNaN(thisCart.totalNumber)){
+          thisCart.sendOrder();
+        }
+        else {
+          if(thisCart.dom.phone.value.length !== 9){
+            alert("Numer telefonu jest nie poprawny");
+          }
+          if(thisCart.dom.address.value.length <= 2){
+            alert("Adress jest nie poprawny");
+          }
+          if(isNaN(thisCart.totalNumber) || thisCart.totalNumber < 1  ){
+            alert("Musisz dodać przynajmniej jeden produkt by złożyć zamówienie");
+          }
+        }
+      });
+
+      thisCart.dom.phone.addEventListener("change", function(){
+        if(thisCart.dom.phone.value.length == 9){
+          thisCart.dom.phone.classList.remove("error");
+        }
+        else {
+          thisCart.dom.phone.classList.add("error");
+        }
+      });
+
+      thisCart.dom.address.addEventListener("change", function(){
+        if(thisCart.dom.address.value.length > 2){
+          thisCart.dom.address.classList.remove("error");
+        }
+        else {
+          thisCart.dom.address.classList.add("error");
+        }
       });
     }
 
@@ -496,6 +529,14 @@ const select = {
       }
 
       fetch(url,options);
+
+      for(const product of thisCart.products){
+        product.dom.amountWidget.parentElement.remove();
+      }
+        thisCart.products.splice(0, thisCart.products.length);
+        thisCart.update();
+        thisCart.dom.address.value = "";
+        thisCart.dom.phone.value = "";
     }
   }
 
